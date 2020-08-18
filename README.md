@@ -49,7 +49,7 @@ To use the pretrained models, download the `pretrained` folder and put it under 
 
 #### Testing the pretrained auto-encoding model:
 The following commands test the performance of the pre-trained models in the point cloud auto-encoding task.
-The command outputs the CD and EMD on the test/validation sets.
+The commands output the CD and EMD on the test/validation sets.
 ```bash
 # Usage:
 # python test.py <config> --pretrained <checkpoint_filename>
@@ -74,7 +74,7 @@ The pretrained model's auto-encoding performance is as follows:
 
 #### Testing the pretrained generation model:
 The following commands test the performance of the pre-trained models in the point cloud generation task.
-The command outputs the JSD, MMD-(CD/EMD), COV-(CD/EMD), and 1NN-(CD/EMD).
+The commands output the JSD, MMD-(CD/EMD), COV-(CD/EMD), and 1NN-(CD/EMD).
 
 ```bash
 # Usage:
