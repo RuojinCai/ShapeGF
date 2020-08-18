@@ -10,7 +10,7 @@ This repository contains a PyTorch implementation of the paper:
 
 [Ruojin Cai*](http://www.cs.cornell.edu/~ruojin/), 
 [Guandao Yang*](https://www.guandaoyang.com/), 
-[Hadar Averbuch-Elor](https://www.cs.tau.ac.il/~averbuch1/), 
+[Hadar Averbuch-Elor](http://www.cs.cornell.edu/~hadarelor/), 
 [Zekun Hao](http://www.cs.cornell.edu/~zekun/), 
 [Serge Belongie](http://blogs.cornell.edu/techfaculty/serge-belongie/), 
 [Noah Snavely](http://www.cs.cornell.edu/~snavely/), 
@@ -48,8 +48,8 @@ Pretrained model will be available in the following google drive: [link](https:/
 To use the pretrained models, download the `pretrained` folder and put it under the project root directory.
 
 #### Testing the pretrained auto-encoding model:
-The following commands test the performance of the pre-trained models in point cloud auto-encoding task.
-The command outputs the CD and EMD on test/validation set.
+The following commands test the performance of the pre-trained models in the point cloud auto-encoding task.
+The command outputs the CD and EMD on the test/validation sets.
 ```bash
 # Usage:
 # python test.py <config> --pretrained <checkpoint_filename>
@@ -73,8 +73,8 @@ The pretrained model's auto-encoding performance is as follows:
 |          | EMD x1e2 | 4.380 |  3.251 |
 
 #### Testing the pretrained generation model:
-Following commends can test the performance of the pre-trained models in point cloud generation task.
-The command should outputs the JSD, MMD-(CD/EMD), COV-(CD/EMD), and 1NN-(CD/EMD).
+The following commands test the performance of the pre-trained models in the point cloud generation task.
+The command outputs the JSD, MMD-(CD/EMD), COV-(CD/EMD), and 1NN-(CD/EMD).
 
 ```bash
 # Usage:
@@ -100,7 +100,7 @@ python train.py <config>
 
 Our code also provides single-node multi GPU training using pytorch's Distributed Data Parallel.
 The script will run on all GPUs visible to the function.
-Following is the usage and examples:
+The usage and examples are as follows:
 ```bash
 # Usage
 python train_multi_gpus.py <config> 
@@ -110,8 +110,8 @@ python train_multi_gpus.py <config> --batch_size <#gpu x batch_size/GPU>
 ```
 
 #### Stage-1: Auto-encoding
-The commands used to train our auto-encoding model for single-shape, single ShapeNet category, and the whole ShapeNet as described next.
-In this stage, we aim to create a conditional generator that models the distribution of 3D points conditioned on the latent vector.
+In this stage, we create a conditional generator that models the distribution of 3D points conditioned on the latent vector.
+The commands used to train our auto-encoding model for a single-shape, single ShapeNet category, and the whole ShapeNet are:
 ```bash
 # Single shape
 python train.py configs/recon/single_shapes/dress.yaml  # the dress in the teaser
@@ -127,8 +127,8 @@ python train_multi_gpus.py configs/recon/shapenet/shapenet_recon.yaml  # ShapeNe
 ```
 
 #### Stage-2: Generation
-In the second stage, we train a l-GAN to model the distribution of shape - which should be captured by the latent vector of the auto-encoder in the first stage.
-The commands used to train l-GAN for single ShapeNet category using the default pretrained model (in the `<root>/pretrained` directory) as described next.
+In the second stage, we train a l-GAN to model the distribution of shapes - which are captured by the latent vector of the auto-encoder described in the first stage.
+The commands used to train l-GAN for a single ShapeNet category using the default pretrained model (in the `<root>/pretrained` directory) are:
 ```bash
 python train.py configs/gen/airplane_gen_add.yaml  # airplane
 python train.py configs/gen/chair_gen_add.yaml     # chair
