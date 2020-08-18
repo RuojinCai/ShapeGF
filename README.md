@@ -48,8 +48,8 @@ Pretrained model will be available in the following google drive: [link](https:/
 To use the pretrained models, download the `pretrained` folder and put it under the project root directory.
 
 #### Testing the pretrained auto-encoding model:
-Following commends can test the performance of the pre-trained models in point cloud auto-encoding task.
-The command should outputs the CD and EMD on test/validation set.
+The following commands test the performance of the pre-trained models in point cloud auto-encoding task.
+The command outputs the CD and EMD on test/validation set.
 ```bash
 # Usage:
 # python test.py <config> --pretrained <checkpoint_filename>
@@ -62,7 +62,7 @@ python test.py configs/recon/chair/chair_recon_add.yaml \
     --pretrained pretrained/recon/chair_recon_add.pt
 ```
 
-Following is a table for the pretrained model's auto-encoding performance.
+The pretrained model's auto-encoding performance is as follows:
 | Dataset  | Metrics  | Ours  | Oracle |
 |----------|----------|-------|--------|
 | Airplane | CD x1e4  | 0.966 |  0.837 |
@@ -98,7 +98,7 @@ python train.py <config>
 
 #### Multi GPU Training
 
-Our code also provide single-node multi GPU training using pytorch's Distributed Data Parallel.
+Our code also provides single-node multi GPU training using pytorch's Distributed Data Parallel.
 The script will run on all GPUs visible to the function.
 Following is the usage and examples:
 ```bash
@@ -110,7 +110,7 @@ python train_multi_gpus.py <config> --batch_size <#gpu x batch_size/GPU>
 ```
 
 #### Stage-1: Auto-encoding
-Followings are the commands to train our auto-encoding model for single-shape, single ShapeNet category, and the whole ShapeNet.
+The commands used to train our auto-encoding model for single-shape, single ShapeNet category, and the whole ShapeNet as described next.
 In this stage, we aim to create a conditional generator that models the distribution of 3D points conditioned on the latent vector.
 ```bash
 # Single shape
@@ -128,7 +128,7 @@ python train_multi_gpus.py configs/recon/shapenet/shapenet_recon.yaml  # ShapeNe
 
 #### Stage-2: Generation
 In the second stage, we train a l-GAN to model the distribution of shape - which should be captured by the latent vector of the auto-encoder in the first stage.
-Followings are the commands to train l-GAN for single ShapeNet category using the default pretrained model (in the `<root>/pretrained` directory).
+The commands used to train l-GAN for single ShapeNet category using the default pretrained model (in the `<root>/pretrained` directory) as described next.
 ```bash
 python train.py configs/gen/airplane_gen_add.yaml  # airplane
 python train.py configs/gen/chair_gen_add.yaml     # chair
