@@ -1,0 +1,79 @@
+data:
+  type: datasets.pointflow_datasets
+  dataset_type: shapenet15k
+  num_workers: 4
+  cates: ['airplane']
+  tr_max_sample_points: 2048
+  te_max_sample_points: 2048
+  data_dir: data/ShapeNetCore.v2.PC15k
+  batch_size: 32
+  dataset_scale: 1
+  normalize_per_shape: False
+  normalize_std_per_axis: False
+  recenter_per_shape: True
+
+viz:
+  log_freq: 10
+  viz_freq: 5000
+  save_freq: 100
+  val_freq: 100
+
+val:
+  run_val_during_training: True
+  save_val_results: False
+  eval_classification: False
+  eval_sampling: False
+  batch_size: 100
+
+trainer:
+  type: trainers.ae_trainer_3D
+  epochs: 2000
+  seed: 100
+  sigma_begin: 1
+  sigma_end: 0.01
+  sigma_num: 10
+  loss_type: "fix_sigma"
+  scale_gt: True
+  surface: True
+  mixture: False
+  opt_dec:
+    type: 'adam'
+    lr: 1e-3  #  use bs*1e-5/8
+    beta1: 0.9
+    beta2: 0.999
+    momentum: 0.9  # for SGD
+    weight_decay: 0.
+    scheduler: linear
+    step_epoch: 2000
+  opt_enc:
+    type: 'adam'
+    lr: 1e-3
+    beta1: 0.9
+    beta2: 0.999
+    momentum: 0.9  # for SGD
+    weight_decay: 0.
+    scheduler: linear
+    step_epoch: 2000
+
+models:
+  scorenet:  # [dim] - [hid_dims] - [dim]
+    type: models.decoders.resnet_cbn
+    dim: 3
+    out_dim: 3
+    hidden_size: 256
+    n_blocks: 16
+    sigma_condition: True
+    param_likelihood: False
+    xyz_condition: True
+    z_dim: 128
+  encoder:
+    type: models.encoders.l3dp_encoder
+    use_deterministic_encoder: True
+    zdim: 128
+    input_dim: 3
+
+inference:
+  step_size_ratio: 1
+  num_steps: 10
+  num_points: 2048
+  weight: 1

@@ -1,0 +1,118 @@
+data:
+  type: datasets.pointflow_datasets
+  dataset_type: shapenet15k
+  num_workers: 4
+  cates: ['car']
+  tr_max_sample_points: 2048
+  te_max_sample_points: 2048
+  data_dir: data/ShapeNetCore.v2.PC15k
+  batch_size: 256
+  dataset_scale: 1
+  normalize_per_shape: False
+  normalize_std_per_axis: False
+  recenter_per_shape: True
+
+viz:
+  save_freq: 100
+  log_freq: 10
+  viz_freq: 2000
+  val_freq: -1
+
+trainer:
+  type: trainers.lgan_trainer_3D
+  epochs: 10000
+  seed: 100
+
+  # For autoencoding
+  validate_recon: True
+  sigma_begin: 1
+  sigma_end: 0.01
+  sigma_num: 5
+  opt_dec:
+    type: 'adam'
+    lr: 1e-3  #  use bs*1e-5/8
+    beta1: 0.9
+    beta2: 0.999
+    momentum: 0.9  # for SGD
+    weight_decay: 0.
+    scheduler: linear
+    step_epoch: 2000
+  opt_enc:
+    type: 'adam'
+    lr: 1e-3
+    beta1: 0.9
+    beta2: 0.999
+    momentum: 0.9  # for SGD
+    weight_decay: 0.
+    scheduler: linear
+    step_epoch: 2000
+
+  # For GAN
+  ae_pretrained: 'pretrained/recon/car_recon_add.pt'
+  gan_only: True
+  gan_loss_type: "wgan"
+  # Gradient penalty
+  gp_weight: 1.
+  gp_type: 'zero_center'
+  n_critics: 1
+  opt_gen:
+    type: 'adam'
+    lr: 1e-4
+    beta1: 0.5
+    beta2: 0.9
+    step: False
+    weight_decay: 0.
+  opt_dis:
+    type: 'adam'
+    lr: 1e-4
+    beta1: 0.5
+    beta2: 0.9
+    step: False
+    weight_decay: 0.
+
+models:
+  # For auto-encoder
+  scorenet:  # [dim] - [hid_dims] - [dim]
+    type: models.decoders.resnet_add
+    dim: 3
+    out_dim: 3
+    hidden_size: 256
+    n_blocks: 24
+    sigma_condition: True
+    param_likelihood: False
+    xyz_condition: True
+    z_dim: 128
+  encoder:
+    type: models.encoders.l3dp_encoder
+    use_deterministic_encoder: True
+    zdim: 128
+    input_dim: 3
+
+  # For latent GAN
+  gen:
+    type: models.generators.mlp_gen
+    inp_dim: 128
+    out_dim: 128
+    dims:
+      - 256
+      - 256
+    prior: gaussian
+    gaussian_scale: 1.
+    use_bn: False
+    output_bn: False
+  dis:
+    type: models.discriminators.mlp_dis
+    inp_dim: 128
+    dims:
+      - 512
+      - 512
+    use_bn: False
+    use_ln: False
+    # use_sigmoid: True
+    use_sigmoid: False
+
+inference:
+  step_size_ratio: 1
+  num_steps: 10
+  num_points: 2048
+  weight: 1

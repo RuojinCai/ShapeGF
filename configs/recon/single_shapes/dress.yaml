@@ -1,0 +1,66 @@
+data:
+  type: datasets.single_shape_datasets
+  num_workers: 4
+  path: data/dress.obj 
+  tr_max_sample_points: 2048
+  te_max_sample_points: 2048
+  train:
+      length: 10000
+      batch_size: 50
+  val:
+      length: 50
+      batch_size: 50
+
+viz:
+  log_freq: 10
+  viz_freq: 100
+  save_freq: 100
+  val_freq: 1
+
+trainer:
+  type: trainers.ae_trainer_3D
+  epochs: 300
+  seed: 100
+  sigma_begin: 0.5
+  sigma_end: 0.005
+  sigma_num: 10
+  opt_dec:
+    type: 'adam'
+    lr: 1e-5  #  use bs*1e-5/8
+    beta1: 0.9
+    beta2: 0.999
+    momentum: 0.9  # for SGD
+    weight_decay: 0.
+    scheduler: linear
+    step_epoch: 200
+  opt_enc:
+    type: 'adam'
+    lr: 1e-5
+    beta1: 0.9
+    beta2: 0.999
+    momentum: 0.9  # for SGD
+    weight_decay: 0.
+    scheduler: linear
+    step_epoch: 200 
+
+models:
+  scorenet:
+    type: models.decoders.resnet_add
+    dim: 3
+    out_dim: 3
+    hidden_size: 256
+    n_blocks: 8
+    sigma_condition: True
+    param_likelihood: False
+    xyz_condition: True
+    z_dim: 128
+  encoder:
+    type: models.encoders.constant_encoder
+    use_deterministic_encoder: True
+    zdim: 128
+
+inference:
+  step_size_ratio: 1
+  num_steps: 10
+  num_points: 2048
+  weight: 1
