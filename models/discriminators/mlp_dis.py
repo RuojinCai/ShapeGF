@@ -2,9 +2,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 class Discriminator(nn.Module):
-
     def __init__(self, cfg, cfgmodel):
         super().__init__()
         self.cfg = cfg
@@ -39,7 +40,7 @@ class Discriminator(nn.Module):
     def forward(self, z=None, bs=None, return_all=False):
         if z is None:
             assert bs is not None
-            z = torch.randn(bs, self.inp_dim).cuda()
+            z = torch.randn(bs, self.inp_dim).to(DEVICE)
 
         y = z
         for layer, bn, ln in zip(self.layers, self.bns, self.lns):
@@ -54,8 +55,6 @@ class Discriminator(nn.Module):
         if self.use_sigmoid:
             y = torch.sigmoid(y)
         if return_all:
-            return {
-                'x': y
-            }
+            return {"x": y}
         else:
             return y

@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Taken from https://discuss.pytorch.org/t/implementing-truncated-normal-initializer/4778/15
 def truncated_normal(tensor, mean=0, std=1, trunc_std=2):
@@ -15,7 +16,6 @@ def truncated_normal(tensor, mean=0, std=1, trunc_std=2):
 
 
 class Generator(nn.Module):
-
     def __init__(self, cfg, cfgmodel):
         super().__init__()
         self.cfg = cfg
@@ -42,24 +42,24 @@ class Generator(nn.Module):
 
     def get_prior(self, bs):
         if self.prior_type == "truncate_gaussian":
-            gaussian_scale = getattr(self.cfgmodel, "gaussian_scale", 1.)
-            truncate_std = getattr(self.cfgmodel, "truncate_std", 2.)
-            noise = (torch.randn(bs, self.inp_dim) * gaussian_scale).cuda()
+            gaussian_scale = getattr(self.cfgmodel, "gaussian_scale", 1.0)
+            truncate_std = getattr(self.cfgmodel, "truncate_std", 2.0)
+            noise = (torch.randn(bs, self.inp_dim) * gaussian_scale).to(DEVICE)
             noise = truncated_normal(
-                noise, mean=0, std=gaussian_scale, trunc_std=truncate_std)
+                noise, mean=0, std=gaussian_scale, trunc_std=truncate_std
+            )
             return noise
         elif self.prior_type == "gaussian":
-            gaussian_scale = getattr(self.cfgmodel, "gaussian_scale", 1.)
-            return torch.randn(bs, self.inp_dim).cuda() * gaussian_scale
+            gaussian_scale = getattr(self.cfgmodel, "gaussian_scale", 1.0)
+            return torch.randn(bs, self.inp_dim).to(DEVICE) * gaussian_scale
 
         else:
-            raise NotImplementedError(
-                "Invalid prior type:%s" % self.prior_type)
+            raise NotImplementedError("Invalid prior type:%s" % self.prior_type)
 
     def forward(self, z=None, bs=None):
         if z is None:
             assert bs is not None
-            z = self.get_prior(bs).cuda()
+            z = self.get_prior(bs).to(DEVICE)
 
         y = z
         for layer, bn in zip(self.layers, self.bns):

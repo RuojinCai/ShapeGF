@@ -5,7 +5,7 @@ from __future__ import print_function
 import numpy as np
 import matplotlib
 
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import torch
 import matplotlib.cm as cm
@@ -21,7 +21,7 @@ def visualize_point_clouds_3d(pcl_lst, title_lst=None):
 
     fig = plt.figure(figsize=(3 * len(pcl_lst), 3))
     for idx, (pts, title) in enumerate(zip(pcl_lst, title_lst)):
-        ax1 = fig.add_subplot(1, len(pcl_lst), 1 + idx, projection='3d')
+        ax1 = fig.add_subplot(1, len(pcl_lst), 1 + idx, projection="3d")
         ax1.set_title(title)
         ax1.scatter(pts[:, 0], pts[:, 1], pts[:, 2], s=5)
         ax1.set_xlim(-1, 1)
@@ -46,7 +46,7 @@ def visualize_point_clouds_3d_scan(pcl_lst, title_lst=None):
 
     fig = plt.figure(figsize=(3 * len(pcl_lst), 3))
     for idx, (pts, title) in enumerate(zip(pcl_lst, title_lst)):
-        ax1 = fig.add_subplot(1, len(pcl_lst), 1 + idx, projection='3d')
+        ax1 = fig.add_subplot(1, len(pcl_lst), 1 + idx, projection="3d")
         ax1.set_title(title)
         ax1.scatter(pts[:, 0], pts[:, 1], pts[:, 2], c=pts[:, 1], s=0.5)
         # print(min(pts[:, 0]), max(pts[:, 0]), min(pts[:, 1]), max(pts[:, 1]), min(pts[:, 2]), max(pts[:, 2]))
@@ -106,7 +106,7 @@ def visualize_point_clouds_2d_overlay(pcl_lst, title_lst=None, path=None):
     return res
 
 
-def visualize_field(gtr, grid, field, k, label='field'):
+def visualize_field(gtr, grid, field, k, label="field"):
     grid_ = np.reshape(grid.cpu().detach().numpy(), (1, k * k, 2))
     if field.size(-1) == 2:
         field = np.reshape(field.cpu().detach().numpy(), (1, k * k, 2))
@@ -126,9 +126,15 @@ def visualize_field(gtr, grid, field, k, label='field'):
         # cs = fig.add_subplot(1, 2, 1)
         X = np.reshape(grid_[i, :, 0], (k, k))
         Y = np.reshape(grid_[i, :, 1], (k, k))
-        cs.contourf(X, Y, np.reshape(field_val[i, :], (k, k)), 20,
-                    vmin=min(field_val[i, :]), vmax=max(field_val[i, :]),
-                    cmap=cm.coolwarm)
+        cs.contourf(
+            X,
+            Y,
+            np.reshape(field_val[i, :], (k, k)),
+            20,
+            vmin=min(field_val[i, :]),
+            vmax=max(field_val[i, :]),
+            cmap=cm.coolwarm,
+        )
         print(min(field_val[i, :]), max(field_val[i, :]))
         m = plt.cm.ScalarMappable(cmap=cm.coolwarm)
         m.set_array(np.reshape(field_val[i, :], (k, k)))
@@ -138,7 +144,9 @@ def visualize_field(gtr, grid, field, k, label='field'):
         for i in range(np.shape(field_val)[0]):
             ax = fig.add_subplot(1, 2, 2)
             scale = 20
-            indx = np.array([np.arange(0, k, scale) + t * k for t in range(0, k, scale)])
+            indx = np.array(
+                [np.arange(0, k, scale) + t * k for t in range(0, k, scale)]
+            )
             X = np.reshape(grid_[i, indx, 0], int(k * k / scale / scale))
             Y = np.reshape(grid_[i, indx, 1], int(k * k / scale / scale))
             u = np.reshape(field[i, indx, 0], int(k * k / scale / scale))
@@ -151,8 +159,8 @@ def visualize_field(gtr, grid, field, k, label='field'):
             ax.quiver(X, Y, u, v, color, alpha=0.8, cmap=cm.coolwarm)
             ax.xaxis.set_ticks([])
             ax.yaxis.set_ticks([])
-            ax.set_aspect('equal')
-            ax.scatter(gt[:, 0], gt[:, 1], s=1, color='r')
+            ax.set_aspect("equal")
+            ax.scatter(gt[:, 0], gt[:, 1], s=1, color="r")
 
     fig.canvas.draw()
     # grab the pixel buffer and dump it into a numpy array
@@ -168,12 +176,18 @@ def visualize_procedure(sigmas, fig_list, gtr, num_vis, cfg, name="Rec_gt"):
     sigmas = np.append([0], sigmas)
     for idx in range(num_vis):
         img = visualize_point_clouds_3d(
-            [fig_list[i][idx] for i in
-             range(0, len(fig_list), 1)] + [gtr[idx]],
-            [(name + " step" +
-              str(i * int(getattr(cfg.inference, "num_steps", 5))) +
-              " sigma%.3f" % sigmas[i])
-             for i in range(0, len(fig_list), 1)] + ["gt shape"])
+            [fig_list[i][idx] for i in range(0, len(fig_list), 1)] + [gtr[idx]],
+            [
+                (
+                    name
+                    + " step"
+                    + str(i * int(getattr(cfg.inference, "num_steps", 5)))
+                    + " sigma%.3f" % sigmas[i]
+                )
+                for i in range(0, len(fig_list), 1)
+            ]
+            + ["gt shape"],
+        )
         all_imgs.append(img)
     img = np.concatenate(all_imgs, axis=1)
     return img
