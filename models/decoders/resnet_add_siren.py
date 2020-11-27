@@ -43,7 +43,7 @@ class ResnetBlockConv1d(nn.Module):
         self.fc_0 = nn.Conv1d(size_in, size_h, 1)
         self.fc_1 = nn.Conv1d(size_h, size_out, 1)
         self.fc_c = nn.Conv1d(c_dim, size_out, 1)
-        self.actvn = nn.ReLU()
+        self.actvn = Sine()
 
         if size_in == size_out:
             self.shortcut = None
