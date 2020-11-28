@@ -159,7 +159,7 @@ def main_worker(cfg, args):
             mesh = generate_from_latent(
                 trainer.score_net, z, args.sigma, threshold=args.threshold,
                 padding=0.1, upsampling_steps=3, resolution0=32)
-            mesh.show()
+            mesh.export("mesh_recon.obj")
             break
 
 
