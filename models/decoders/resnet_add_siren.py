@@ -69,6 +69,7 @@ class ResnetBlockConv1d(nn.Module):
 
 # from https://github.com/lucidrains/siren-pytorch/blob/5160b9db4c0b38e1f25889a347b5acd07d3db022/siren_pytorch/siren_pytorch.py#L8
 class Sine(nn.Module):
+    # TODO w0 initialization
     def __init__(self, w0=1.0):
         super().__init__()
         self.w0 = w0
