@@ -93,11 +93,11 @@ class Decoder(nn.Module):
         self.sigma = sigma = getattr(cfg, "sigma", 12)
 
         # Input = Conditional = zdim (shape) + dim (xyz) + 1 (sigma)
-        self.bvals = torch.randn(1, m_dim, dim) * sigma # (1, 256, 3)
+        self.bvals = torch.randn(1, m_dim, dim) * sigma  # (1, 256, 3)
         self.bvals.requires_grad = False
 
         # c_dim = z_dim + dim + 1
-        c_dim = z_dim + 2 * m_dim + 1
+        c_dim = z_dim + 2 * self.m_dim + 1
         self.conv_p = nn.Conv1d(c_dim, hidden_size, 1)
         self.blocks = nn.ModuleList(
             [ResnetBlockConv1d(c_dim, hidden_size) for _ in range(n_blocks)]
@@ -116,6 +116,7 @@ class Decoder(nn.Module):
         p = x.transpose(1, 2)  # (bs, dim, n_points)
         batch_size, D, num_points = p.size()
         p = self.encode(x)
+        # pdb.set_trace()
         c_expand = c.unsqueeze(2).expand(-1, -1, num_points)
         c_xyz = torch.cat([p, c_expand], dim=1)
         net = self.conv_p(c_xyz)
@@ -133,14 +134,14 @@ class Decoder(nn.Module):
         # avals = torch.ones(input.size()[0], input.size()[1], 1)
         # pdb.set_trace()
         # shape of input is not batch x 3, so need to figure out if this works with the input shape.
-        
+
         # bvals: (bs, m, 3) input : (bs, 3, #points) ->  (bs, m, #points)
         # Bmm: batch matrix-matrix-multiply
-        bvals = self.bvals.expand(input.size(0), -1, -1) # (bs, m, dim)
-        vals1 = torch.sin(2 * np.pi * torch.bmm(bvals, input)) # (bs, m, npoints)
-        vals2 = torch.cos(2 * np.pi * torch.bmm(bvals, input)) # (bs, m, npoints)
+        bvals = self.bvals.expand(input.size(0), -1, -1)  # (bs, m, dim)
+        input = input.permute(0, 2, 1)
+        vals1 = torch.sin(2 * np.pi * torch.bmm(bvals, input))  # (bs, m, npoints)
+        vals2 = torch.cos(2 * np.pi * torch.bmm(bvals, input))  # (bs, m, npoints)
         # vals1 = avals * torch.sin(2 * np.pi * input) @ bvals.transpose(1, 2)
         # vals2 = avals * torch.cos(2 * np.pi * input) @ bvals.transpose(1, 2)
-        encoded_input = torch.cat((vals1, vals2), dim=1) # (bs, 2m, npoints)
-        print(encoded_input.shape)
+        encoded_input = torch.cat((vals1, vals2), dim=1)  # (bs, 2m, npoints)
         return encoded_input
