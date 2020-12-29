@@ -3,6 +3,8 @@ import torch.nn as nn
 import numpy as np
 import pdb
 
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 class ResnetBlockConv1d(nn.Module):
     """ 1D-Convolutional ResNet block class.
@@ -137,7 +139,7 @@ class Decoder(nn.Module):
 
         # bvals: (bs, m, 3) input : (bs, 3, #points) ->  (bs, m, #points)
         # Bmm: batch matrix-matrix-multiply
-        bvals = self.bvals.expand(input.size(0), -1, -1)  # (bs, m, dim)
+        bvals = self.bvals.expand(input.size(0), -1, -1).to(DEVICE)  # (bs, m, dim)
         input = input.permute(0, 2, 1)
         vals1 = torch.sin(2 * np.pi * torch.bmm(bvals, input))  # (bs, m, npoints)
         vals2 = torch.cos(2 * np.pi * torch.bmm(bvals, input))  # (bs, m, npoints)
