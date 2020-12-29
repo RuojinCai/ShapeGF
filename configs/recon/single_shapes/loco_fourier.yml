@@ -8,8 +8,8 @@ data:
     length: 10000
     batch_size: 50
   val:
-    length: 1
-    batch_size: 1
+    length: 50
+    batch_size: 50
 
 viz:
   log_freq: 10

@@ -129,21 +129,11 @@ class Decoder(nn.Module):
 
     def encode(self, input):
         # implementing guass only for now
-        # scale_factor = 12
-        # bvals = (
-        #     torch.rand(input.size()[0], input.size()[1], 3) * scale_factor
-        # )  # normally 256 = 3
-        # avals = torch.ones(input.size()[0], input.size()[1], 1)
-        # pdb.set_trace()
-        # shape of input is not batch x 3, so need to figure out if this works with the input shape.
-
-        # bvals: (bs, m, 3) input : (bs, 3, #points) ->  (bs, m, #points)
         # Bmm: batch matrix-matrix-multiply
         bvals = self.bvals.expand(input.size(0), -1, -1).to(DEVICE)  # (bs, m, dim)
         input = input.permute(0, 2, 1)
         vals1 = torch.sin(2 * np.pi * torch.bmm(bvals, input))  # (bs, m, npoints)
         vals2 = torch.cos(2 * np.pi * torch.bmm(bvals, input))  # (bs, m, npoints)
-        # vals1 = avals * torch.sin(2 * np.pi * input) @ bvals.transpose(1, 2)
-        # vals2 = avals * torch.cos(2 * np.pi * input) @ bvals.transpose(1, 2)
         encoded_input = torch.cat((vals1, vals2), dim=1)  # (bs, 2m, npoints)
+        del vals1, vals2
         return encoded_input
