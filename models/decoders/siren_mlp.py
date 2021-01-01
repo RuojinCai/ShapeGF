@@ -51,7 +51,7 @@ class Decoder(nn.Module):
         self.cfg = cfg
         self.z_dim = z_dim = cfg.z_dim
         self.dim = dim = cfg.dim
-        self.out_dim = out_dim = cfg.out_dim * 2048
+        self.out_dim = out_dim = cfg.out_dim  # * 2048
         self.hidden_size = hidden_size = cfg.hidden_size
         self.n_blocks = n_blocks = cfg.n_blocks
 
