@@ -51,7 +51,7 @@ class Decoder(nn.Module):
         self.cfg = cfg
         self.z_dim = z_dim = cfg.z_dim
         self.dim = dim = cfg.dim
-        self.out_dim = out_dim = cfg.out_dim
+        self.out_dim = out_dim = cfg.out_dim * 2048
         self.hidden_size = hidden_size = cfg.hidden_size
         self.n_blocks = n_blocks = cfg.n_blocks
 
@@ -60,7 +60,8 @@ class Decoder(nn.Module):
         hidden_features = self.hidden_size
         hidden_layers = self.n_blocks
         c_dim = z_dim + dim + 1
-        in_features = c_dim  # 270336  # c_dim * batch_size
+        batch_size = 50
+        in_features = 270336  # c_dim * batch_size
         outermost_linear = False
         first_omega_0 = 30
         hidden_omega_0 = 30.0
@@ -87,8 +88,8 @@ class Decoder(nn.Module):
 
             with torch.no_grad():
                 final_linear.weight.uniform_(
-                    (-np.sqrt(6 / hidden_features) / hidden_omega_0).item(),
-                    (np.sqrt(6 / hidden_features) / hidden_omega_0).item(),
+                    torch.tensor((-np.sqrt(6 / hidden_features) / hidden_omega_0)),
+                    torch.tensor((np.sqrt(6 / hidden_features) / hidden_omega_0)),
                 )
 
             self.net.append(final_linear)
@@ -114,9 +115,10 @@ class Decoder(nn.Module):
         c_expand = c.unsqueeze(2).expand(-1, -1, num_points)
         c_xyz = torch.cat([p, c_expand], dim=1)
         # ToDo: Not sure this viewing is right.
-        c_xyz = c_xyz.view(batch_size, num_points, -1)
+        c_xyz = c_xyz.view(batch_size, -1)
         output = self.net(c_xyz)
-        # output = output.view(batch_size, -1, 3)
+        # pdb.set_trace()
+        output = output.view(batch_size, -1, 3)
         return output  # , coords
 
     def forward_with_activations(self, coords, retain_grad=False):
