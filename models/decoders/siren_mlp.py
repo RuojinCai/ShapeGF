@@ -61,7 +61,7 @@ class Decoder(nn.Module):
         hidden_layers = self.n_blocks
         c_dim = z_dim + dim + 1
         batch_size = 50
-        in_features = 270336  # c_dim * batch_size
+        in_features = c_dim  # 270336
         outermost_linear = False
         first_omega_0 = 30
         hidden_omega_0 = 30.0
@@ -112,13 +112,13 @@ class Decoder(nn.Module):
         p = x.transpose(1, 2)  # (bs, dim, n_points)
         batch_size, D, num_points = p.size()
 
+        # ToDo: Not sure this viewing is right.
         c_expand = c.unsqueeze(2).expand(-1, -1, num_points)
         c_xyz = torch.cat([p, c_expand], dim=1)
-        # ToDo: Not sure this viewing is right.
-        c_xyz = c_xyz.view(batch_size, -1)
+        # c_xyz = c_xyz.view(batch_size, -1)
+        c_xyz = c_xyz.view(batch_size, num_points, -1)
         output = self.net(c_xyz)
-        # pdb.set_trace()
-        output = output.view(batch_size, -1, 3)
+        # output = output.view(batch_size, -1, 3)
         return output  # , coords
 
     def forward_with_activations(self, coords, retain_grad=False):
