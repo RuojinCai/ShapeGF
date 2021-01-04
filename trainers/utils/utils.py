@@ -3,6 +3,8 @@ import random
 import numpy as np
 from torch import optim
 
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 def get_opt(params, cfgopt):
     if cfgopt.type == "adam":
