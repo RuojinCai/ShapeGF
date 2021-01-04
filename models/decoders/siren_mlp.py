@@ -62,7 +62,7 @@ class Decoder(nn.Module):
         c_dim = z_dim + dim + 1
         batch_size = 50
         in_features = c_dim  # 270336
-        outermost_linear = False
+        outermost_linear = True
         first_omega_0 = 30
         hidden_omega_0 = 30.0
 
