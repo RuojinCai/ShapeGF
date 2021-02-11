@@ -94,14 +94,13 @@ class Decoder(nn.Module):
         self.m_dim = m_dim = getattr(cfg, "m_dim", 256)
         self.sigma = sigma = getattr(cfg, "sigma", 12)
 
-        # Input = Conditional = zdim (shape) + dim (xyz) + 1 (sigma)
         self.bvals = torch.randn(1, m_dim, dim) * sigma  # (1, 256, 3)
         self.bvals.requires_grad = False
         self.avals = torch.ones(self.bvals[:, :, 0].shape)
         self.avals.requires_grad = False
 
-        # c_dim = z_dim + dim + 1
-        c_dim = z_dim + 2 * self.m_dim + 1 + 3
+        # Input = Conditional = zdim (shape) + dim (xyz) + 1 (sigma)
+        c_dim = z_dim + 2 * self.m_dim + 1 + dim
         self.conv_p = nn.Conv1d(c_dim, hidden_size, 1)
         self.blocks = nn.ModuleList(
             [ResnetBlockConv1d(c_dim, hidden_size) for _ in range(n_blocks)]
@@ -134,7 +133,7 @@ class Decoder(nn.Module):
         # Bmm: batch matrix-matrix-multiply]
         bvals = self.bvals.expand(input.size(0), -1, -1).to(DEVICE)  # (bs, m, dim)
         avals = self.avals.to(DEVICE)  # (m, 1)
-        input = input.permute(0, 2, 1)
+        input = input.permute(0, 2, 1).to
         vals1 = self.avals.T * torch.sin(
             2 * np.pi * torch.bmm(bvals, input)
         )  # (bs, m, npoints)
