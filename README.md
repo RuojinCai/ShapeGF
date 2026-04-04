@@ -44,7 +44,7 @@ Please follow the instruction from PointFlow to set-up the dataset: [link](https
 
 ## Pretrained Model 
 
-Pretrained model will be available in the following google drive: [link](https://drive.google.com/drive/folders/1VBtAKSQBKaKoOeTzORbrWcnPoBk9Wl4-?usp=sharing).
+Pretrained models are available in the [Files and versions](https://huggingface.co/RuojinCai/ShapeGF/tree/main) tab of our Hugging Face repository.  
 To use the pretrained models, download the `pretrained` folder and put it under the project root directory.
 
 #### Testing the pretrained auto-encoding model:
